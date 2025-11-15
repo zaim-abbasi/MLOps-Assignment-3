@@ -1,0 +1,19 @@
+# Note: apache-airflow is already included in the Astronomer base image
+# Do not add apache-airflow here - change the base image version instead
+
+# Data processing
+pandas==2.1.4
+numpy==1.26.2
+
+# Database
+psycopg2-binary==2.9.9
+
+# Data Version Control
+dvc>=3.0.0
+
+# HTTP requests
+requests==2.31.0
+
+# Utilities
+python-dotenv==1.0.0
+
