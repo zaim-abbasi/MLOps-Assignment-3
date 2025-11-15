@@ -20,7 +20,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: webserver
+    entrypoint: /bin/bash
+    command: -c "cd /usr/local/airflow && airflow db check && airflow webserver --port 8080 --hostname 0.0.0.0"
     depends_on:
       - postgres
       - airflow-init
@@ -39,17 +40,19 @@ services:
       - ./scripts:/usr/local/airflow/scripts
     ports:
       - "8080:8080"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 60s
 
   airflow-scheduler:
     build:
       context: .
       dockerfile: Dockerfile
-    command: scheduler
+    entrypoint: /bin/bash
+    command: -c "cd /usr/local/airflow && airflow db check && airflow scheduler"
     depends_on:
       - postgres
       - airflow-init
@@ -134,8 +137,8 @@ services:
           echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
           echo
         fi
-        mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "$${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        mkdir -p /sources/logs /sources/dags
+        chown -R "$${AIRFLOW_UID}:0" /sources/{logs,dags}
         exec /entrypoint airflow version
     environment:
       - AIRFLOW_UID=50000
@@ -143,7 +146,6 @@ services:
     volumes:
       - ./logs:/sources/logs
       - ./dags:/sources/dags
-      - ./plugins:/sources/plugins
 
 volumes:
   postgres_data:

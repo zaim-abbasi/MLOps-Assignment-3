@@ -42,7 +42,7 @@ dag = DAG(
 
 # Constants
 NASA_API_URL = "https://api.nasa.gov/planetary/apod"
-NASA_API_KEY = "DEMO_KEY"  # Can be overridden with Airflow Variable
+NASA_API_KEY = "3vyMWXzx05fzDfQKgb5LQEbTj16WhAct3IsD7xND"
 DATA_DIR = "/usr/local/airflow/data"
 CSV_FILE = f"{DATA_DIR}/apod_data.csv"
 DVC_DIR = "/usr/local/airflow"
@@ -99,8 +99,14 @@ def transform_apod_data(**context):
     print(f"Transformed data shape: {df.shape}")
     print(f"Transformed data:\n{df.head()}")
     
+    # Convert to dict and ensure date is string for JSON serialization
+    result = df.to_dict('records')[0]
+    # Convert Timestamp to string for XCom serialization
+    if isinstance(result['date'], pd.Timestamp):
+        result['date'] = result['date'].strftime('%Y-%m-%d')
+    
     # Store DataFrame as JSON in XCom (for passing to next task)
-    return df.to_dict('records')[0]
+    return result
 
 
 def load_apod_data(**context):
