@@ -248,7 +248,7 @@ git_task = BashOperator(
     git config --global user.email "airflow@example.com" && \
     git config --global user.name "Airflow" && \
     git init 2>/dev/null || true && \
-    git add *.dvc .dvc/ 2>/dev/null || true && \
+    git add data/*.dvc .dvc/ 2>/dev/null || true && \
     git commit -m "Add DVC metadata for APOD data - {{{{ ds }}}}" || echo "No changes to commit" && \
     echo "Git commit completed"
     """,
